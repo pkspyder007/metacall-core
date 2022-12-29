@@ -9,6 +9,7 @@ on:
     branches:
       - master
       - develop # TODO: Remove develop when all tests pass
+      - walk
 
 jobs:
   windows-test:
