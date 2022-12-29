@@ -74,9 +74,14 @@ function sub-python {
 
 	# Download installer
 	(New-Object Net.WebClient).DownloadFile("https://www.python.org/ftp/python/$PythonVersion/python-$PythonVersion-amd64.exe", "$(pwd)\python_installer.exe")
+	(New-Object Net.WebClient).DownloadFile("https://www.nasm.us/pub/nasm/releasebuilds/2.16.01/win64/nasm-2.16.01-installer-x64.exe", "$(pwd)\nasm_x64.exe")
 
 	# Install Python
 	./python_installer.exe /quiet "TargetDir=$RuntimeDir" `
+		Include_debug=1 Include_symbols=1 PrependPath=1 CompileAll=1
+
+	# Install NASM
+	./nasm_x64.exe /quiet "TargetDir=$RuntimeDir" `
 		Include_debug=1 Include_symbols=1 PrependPath=1 CompileAll=1
 
 	# Set environment variables
