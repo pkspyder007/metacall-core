@@ -49,7 +49,7 @@ function sub-build {
 
 		$Global:ExitCode = $RecentExitCode
 		
-		Exit
+		Exit $RecentExitCode
 	}
 
 	# Tests (coverage needs to run the tests)
