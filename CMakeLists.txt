@@ -251,6 +251,19 @@ if(OPTION_BUILD_TESTS)
 	enable_testing()
 endif()
 
+if (DEFINED ENV{GITHUB_ACTIONS})
+  if (WIN32)
+    link_directories("D:/gtest/lib")
+    include_directories("D:/gtest/include")
+
+    set(CMAKE_CXX_FLAGS_RELEASE "/MT")
+    set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
+  elseif (APPLE)
+    link_directories("/usr/local/lib")
+    include_directories("/usr/local/include")
+  endif ()
+endif ()
+
 #
 # Project module includes
 #
