@@ -41,7 +41,7 @@ function sub-build {
 
 	# Build the project
 	echo "Building MetaCall..."
-	cmake --build . "-j$((Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors)" --target install
+	cmake --build . "-j$((Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors)"
 
 	if ( -not $? ) {
 		$RecentExitCode = $LASTEXITCODE
