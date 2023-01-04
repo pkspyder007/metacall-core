@@ -48,6 +48,8 @@ function sub-build {
 		echo "Failure in build with exit code: $RecentExitCode"
 
 		$Global:ExitCode = $RecentExitCode
+
+		Exit $RecentExitCode
 	}
 
 	# Tests (coverage needs to run the tests)
@@ -75,6 +77,8 @@ function sub-build {
 			echo "Failure in tests with exit code: $RecentExitCode"
 
 			$Global:ExitCode = $RecentExitCode
+
+			Exit $RecentExitCode
 		}
 	}
 
