@@ -64,7 +64,9 @@ find_path(WASMTIME_INCLUDE_DIR
 
 message (STATUS "OP_DEBUG")
 message(STATUS "Set target architecture to ${WASMTIME_ARCH}")
-message (STATUS "OP_DEBUG")
+message(STATUS "Set target architecture to ${PROJECT_OS_WIN}")
+message(STATUS "Set target architecture to ${PROJECT_OS_NAME}")
+message(STATUS "Set target architecture to ${PROJECT_OS_FAMILY}")
 
 if(WASMTIME_LIBRARY AND WASMTIME_INCLUDE_DIR)
 	message(DEBUG "Found Wasmtime C API library at ${WASMTIME_LIBRARY}")
@@ -86,6 +88,7 @@ else()
 	message (STATUS "OP_DEBUG")
 	message(STATUS "download url ${WASMTIME_DOWNLOAD_URL}")
 	message(STATUS "project arch ${PROJECT_ARCH_32BIT}")
+	message(STATUS "wasm path ${WASMTIME_DOWNLOAD_DEST}")
 	message (STATUS "OP_DEBUG")
 
 	file(DOWNLOAD ${WASMTIME_DOWNLOAD_URL} ${WASMTIME_DOWNLOAD_DEST}
