@@ -62,6 +62,10 @@ find_path(WASMTIME_INCLUDE_DIR
 	DOC "Wasmtime C API headers"
 )
 
+message (STATUS "OP_DEBUG")
+message(STATUS "Set target architecture to ${WASMTIME_ARCH}")
+message (STATUS "OP_DEBUG")
+
 if(WASMTIME_LIBRARY AND WASMTIME_INCLUDE_DIR)
 	message(DEBUG "Found Wasmtime C API library at ${WASMTIME_LIBRARY}")
 	message(DEBUG "Found Wasm C API header in ${WASMTIME_INCLUDE_DIR}")
@@ -78,6 +82,11 @@ else()
 	set(WASMTIME_DOWNLOAD_URL
 		"https://github.com/bytecodealliance/wasmtime/releases/download/v${WASMTIME_VERSION}/${WASMTIME_DOWNLOAD_ARCHIVE_NAME}")
 	set(WASMTIME_DOWNLOAD_DEST "${WASMTIME_LOCAL_PATH}/${WASMTIME_DOWNLOAD_ARCHIVE_NAME}")
+
+	message (STATUS "OP_DEBUG")
+	message(STATUS "download url ${WASMTIME_DOWNLOAD_URL}")
+	message(STATUS "project arch ${PROJECT_ARCH_32BIT}")
+	message (STATUS "OP_DEBUG")
 
 	file(DOWNLOAD ${WASMTIME_DOWNLOAD_URL} ${WASMTIME_DOWNLOAD_DEST}
 		STATUS DOWNLOAD_STATUS
