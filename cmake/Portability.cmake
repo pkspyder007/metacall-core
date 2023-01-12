@@ -1,4 +1,4 @@
-#
+P#
 #	Portability CMake support by Parra Studios
 #	Cross-platform and architecture detection utility.
 #
