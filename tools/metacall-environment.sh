@@ -676,29 +676,37 @@ sub_c(){
 			$SUDO_CMD apk add --no-cache libffi-dev
 			$SUDO_CMD apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/v3.16/main clang-libs=13.0.1-r1 clang-dev=13.0.1-r1
 		fi
+
+
 	elif [ "${OPERATIVE_SYSTEM}" = "Darwin" ]; then
 		brew install libffi
 		brew install llvm@$LLVM_VERSION_STRING
 		brew link llvm@$LLVM_VERSION_STRING --force --overwrite
+
 		mkdir -p "$ROOT_DIR/build"
 		CMAKE_CONFIG_PATH="$ROOT_DIR/build/CMakeConfig.txt"
 
 		LIBCLANG_PREFIX=$(brew --prefix llvm@$LLVM_VERSION_STRING)
 		SDKROOT=$(xcrun --show-sdk-path)
-		CPATH=""
-		C_INCLUDE_PATH=""
-		CPLUS_INCLUDE_PATH=""
 
-		echo "-DLibClang_INCLUDE_DIR=${LIBCLANG_PREFIX}/include" >> $CMAKE_CONFIG_PATH
+		echo "-DLibClang_INCLUDE_DIR=${LIBCLANG_PREFIX}/include" > $CMAKE_CONFIG_PATH
 		echo "-DLibClang_LIBRARY=${LIBCLANG_PREFIX}/lib/libclang.dylib" >> $CMAKE_CONFIG_PATH
 		echo "-DLLVM_PREFIX=${LIBCLANG_PREFIX}" >> $CMAKE_CONFIG_PATH
 
-		# macOS SDK and include paths
 		echo "-DCMAKE_OSX_SYSROOT=$SDKROOT" >> $CMAKE_CONFIG_PATH
-		echo "SDKROOT=${SDKROOT}" >> $CMAKE_CONFIG_PATH
-		echo "CPATH=${CPATH}" >> $CMAKE_CONFIG_PATH
-		echo "C_INCLUDE_PATH=${C_INCLUDE_PATH}" >> $CMAKE_CONFIG_PATH
-		echo "CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}" >> $CMAKE_CONFIG_PATH
+		echo "SDKROOT=$SDKROOT" >> $CMAKE_CONFIG_PATH
+
+		LIBTCC_INSTALL_PREFIX="$ROOT_DIR/build/libtcc"
+		echo "-DLIBTCC_INSTALL_PREFIX=$LIBTCC_INSTALL_PREFIX" >> $CMAKE_CONFIG_PATH
+		echo "-DLIBTCC_CONFIGURE=./configure;--prefix=$LIBTCC_INSTALL_PREFIX;--debug" >> $CMAKE_CONFIG_PATH
+		echo "-DLIBTCC_BUILD=make;-j$(sysctl -n hw.ncpu)" >> $CMAKE_CONFIG_PATH
+		echo "-DLIBTCC_INSTALL=make;install" >> $CMAKE_CONFIG_PATH
+
+		# echo "CPATH=${CPATH}" >> $CMAKE_CONFIG_PATH
+		# echo "C_INCLUDE_PATH=${C_INCLUDE_PATH}" >> $CMAKE_CONFIG_PATH
+		# echo "CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}" >> $CMAKE_CONFIG_PATH
+		echo "-DLibClang_INCLUDE_DIR=$LIBCLANG_PREFIX/include" >> $CMAKE_CONFIG_PATH
+		echo "-DCMAKE_CXX_FLAGS=-I$LIBCLANG_PREFIX/include" >> $CMAKE_CONFIG_PATH
 
 
 	fi

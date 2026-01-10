@@ -76,23 +76,17 @@ elseif(PROJECT_OS_FAMILY STREQUAL macos)
 	#     #21 0x106fd5ee3 in main main.cpp:27
 	#     #22 0x7fff75eb03d4 in start (libdyld.dylib:x86_64+0x163d4)
 
-	# Use SDK only if provided via CMake cache
-	if(CMAKE_OSX_SYSROOT)
-		message(STATUS "Using macOS SDK: ${CMAKE_OSX_SYSROOT}")
+	# Use commands only provided by the environment script
+	if(NOT DEFINED LIBTCC_CONFIGURE)
+		message(FATAL_ERROR "LIBTCC_CONFIGURE must be set by the environment script")
 	endif()
 
-	# Use LLVM if provided
-	if(LLVM_PREFIX)
-		message(STATUS "Using LLVM for TCC from ${LLVM_PREFIX}")
-		set(TCC_CC "${LLVM_PREFIX}/bin/clang")
-		set(TCC_CXX "${LLVM_PREFIX}/bin/clang++")
-		set(LIBTCC_CONFIGURE
-			CC=${TCC_CC} CXX=${TCC_CXX}
-			./configure --prefix=${LIBTCC_INSTALL_PREFIX} ${LIBTCC_DEBUG}
-		)
-	else()
-		# Use the CMake-selected compiler
-		set(LIBTCC_CONFIGURE ./configure --prefix=${LIBTCC_INSTALL_PREFIX} ${LIBTCC_DEBUG})
+	if(NOT DEFINED LIBTCC_BUILD)
+		message(FATAL_ERROR "LIBTCC_BUILD must be set by the environment script")
+	endif()
+
+	if(NOT DEFINED LIBTCC_INSTALL)
+		message(FATAL_ERROR "LIBTCC_INSTALL must be set by the environment script")
 	endif()
 elseif(PROJECT_OS_FAMILY STREQUAL win32)
 	if(PROJECT_OS_NAME STREQUAL MinGW)
@@ -114,7 +108,7 @@ if(PROJECT_OS_BSD)
 elseif(PROJECT_OS_FAMILY STREQUAL unix)
 	set(LIBTCC_BUILD make -j${N})
 elseif(PROJECT_OS_FAMILY STREQUAL macos)
-	set(LIBTCC_BUILD make -j${N})
+	# LIBTCC_BUILD must already be defined
 elseif(PROJECT_OS_FAMILY STREQUAL win32)
 	if(PROJECT_OS_NAME STREQUAL MinGW)
 		set(LIBTCC_BUILD make -j${N})
@@ -131,7 +125,7 @@ if(PROJECT_OS_BSD)
 elseif(PROJECT_OS_FAMILY STREQUAL win32 AND PROJECT_OS_NAME STREQUAL Windows)
 	set(LIBTCC_INSTALL "")
 else()
-	set(LIBTCC_INSTALL make install)
+	# LIBTCC_INSTALL must already be defined
 endif()
 
 set(LIBTCC_TARGET libtcc-depends)
@@ -152,7 +146,7 @@ set(LIBTTC_RUNTIME_FILES
 	"${LIBTTC_RUNTIME_PATH}/bt-log.o"
 )
 
-# LibTCC Proejct
+# LibTCC Project
 ExternalProject_Add(${LIBTCC_TARGET}
 	DOWNLOAD_NAME		tinycc.tar.gz
 	URL					https://github.com/metacall/tinycc/archive/${LIBTCC_COMMIT_SHA}.tar.gz

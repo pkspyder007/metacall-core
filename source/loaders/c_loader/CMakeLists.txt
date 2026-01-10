@@ -10,7 +10,7 @@ endif()
 find_package(LibFFI)
 
 if(NOT LIBFFI_FOUND)
-	message(SEND_ERROR "Foreing Function Interface library not found")
+	message(SEND_ERROR "Foreign Function Interface library not found")
 	return()
 endif()
 
@@ -30,6 +30,10 @@ find_package(LibClang)
 if(NOT LibClang_FOUND)
 	message(SEND_ERROR "Clang C API library not found")
 	return()
+endif()
+
+if(DEFINED LibClang_INCLUDE_DIR AND EXISTS "${LibClang_INCLUDE_DIR}")
+	set(LibClang_INCLUDE_DIRS "${LibClang_INCLUDE_DIR}")
 endif()
 
 #
@@ -94,23 +98,13 @@ add_library(${target} MODULE
 	${headers}
 )
 
-# --- libclang include/link fix for macOS ---
 if(APPLE)
-	if(LLVM_PREFIX)
-		message(STATUS "Using LLVM from ${LLVM_PREFIX}")
-
-		# Force libclang paths from Homebrew LLVM
-		set(LibClang_INCLUDE_DIR "${LLVM_PREFIX}/include")
-		set(LibClang_LIBRARY "${LLVM_PREFIX}/lib/libclang.dylib")
-
-		target_include_directories(${target} PRIVATE ${LLVM_PREFIX}/include)
-		target_link_directories(${target} PRIVATE ${LLVM_PREFIX}/lib)
-		target_link_libraries(${target} PRIVATE clang)
-	else()
-		message(WARNING "LLVM_PREFIX not set; relying on find_package(LibClang)")
-	endif()
+    if(DEFINED LLVM_PREFIX)
+        message(STATUS "Using LLVM from ${LLVM_PREFIX}")
+    else()
+        message(WARNING "LLVM_PREFIX not set; relying on find_package(LibClang)")
+    endif()
 endif()
-# -----------------------------------------
 
 message(STATUS "LLVM_PREFIX = ${LLVM_PREFIX}")
 message(STATUS "LibClang_INCLUDE_DIR = ${LibClang_INCLUDE_DIR}")
