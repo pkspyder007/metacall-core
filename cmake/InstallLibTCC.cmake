@@ -39,8 +39,7 @@ else()
 	set(LIBTCC_DEBUG)
 endif()
 
-# Configure
-# Configure
+
 if(PROJECT_OS_FAMILY STREQUAL unix)
 	if(OPTION_BUILD_MUSL)
 		set(LIBTCC_CONFIGURE ./configure --prefix=${LIBTCC_INSTALL_PREFIX} ${LIBTCC_DEBUG} --disable-static --config-musl)
@@ -50,7 +49,7 @@ if(PROJECT_OS_FAMILY STREQUAL unix)
 elseif(PROJECT_OS_FAMILY STREQUAL macos)
 	# TODO: --disable-static is not working on MacOS, this should be reported or further investigated
 
-		# AddressSanitizer:DEADLYSIGNAL
+	# AddressSanitizer:DEADLYSIGNAL
 	# =================================================================
 	# ==5339==ERROR: AddressSanitizer: BUS on unknown address 0x7fffac377b10 (pc 0x7fffac377b10 bp 0x7ffee8c2a0a0 sp 0x7ffee8c29f98 T0)
 	#     #0 0x7fffac377b0f in off32 (libsystem_c.dylib:x86_64+0x3647db0f)

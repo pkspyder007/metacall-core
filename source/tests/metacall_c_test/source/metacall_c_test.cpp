@@ -230,17 +230,15 @@ TEST_F(metacall_c_test, DefaultConstructor)
 
 	/* TODO: remove for macos only */
 	/* File with dependencies */
-	/*
+	
 	const char *c_dep_scripts[] = {
-		"ffi.c",
-		"ffi.ld"
+		"ffi.c"
 	};
-	*/
+
 
 	/* Set dependency paths */
-	/*
 	EXPECT_EQ((int)0, (int)metacall_execution_path("c", LIBFFI_INCLUDE_DIR));
-	EXPECT_EQ((int)0, (int)metacall_execution_path("c", LIBFFI_LIBRARY));
+	// EXPECT_EQ((int)0, (int)metacall_execution_path("c", LIBFFI_LIBRARY));
 
 	EXPECT_EQ((int)0, (int)metacall_load_from_file("c", c_dep_scripts, sizeof(c_dep_scripts) / sizeof(c_dep_scripts[0]), NULL));
 
@@ -254,17 +252,17 @@ TEST_F(metacall_c_test, DefaultConstructor)
 
 	metacall_value_destroy(ret);
 
-	ret = metacall("int_type_renaming");
+	// ret = metacall("int_type_renaming");
 
-	EXPECT_NE((void *)NULL, (void *)ret);
+	// EXPECT_NE((void *)NULL, (void *)ret);
 
-	EXPECT_EQ((enum metacall_value_id)metacall_value_id(ret), (enum metacall_value_id)METACALL_INT);
+	// EXPECT_EQ((enum metacall_value_id)metacall_value_id(ret), (enum metacall_value_id)METACALL_INT);
 
-	EXPECT_EQ((int)metacall_value_to_int(ret), (int)345);
+	// EXPECT_EQ((int)metacall_value_to_int(ret), (int)345);
 
-	metacall_value_destroy(ret);
+	// metacall_value_destroy(ret);
 
-	*/
+
 
 	/* Native register */
 	metacall_register("sum_callback", sum_callback, NULL, METACALL_INT, 2, METACALL_INT, METACALL_INT);
@@ -278,7 +276,6 @@ TEST_F(metacall_c_test, DefaultConstructor)
 	};
 
 	/* TODO: remove this test for macOS only */
-	/*
 	ret = metacallv_s("c_callback", args, 1);
 
 	EXPECT_NE((void *)NULL, (void *)ret);
@@ -290,7 +287,6 @@ TEST_F(metacall_c_test, DefaultConstructor)
 	metacall_value_destroy(ret);
 
 	metacall_value_destroy(args[0]);
-	*/
 
 	/* Memory */
 	{
