@@ -94,6 +94,22 @@ add_library(${target} MODULE
 	${headers}
 )
 
+# --- libclang include/link fix for macOS ---
+if(APPLE)
+	execute_process(
+		COMMAND brew --prefix llvm
+		OUTPUT_VARIABLE LLVM_PREFIX
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+		ERROR_QUIET
+	)
+	if(LLVM_PREFIX)
+		target_include_directories(${target} PRIVATE ${LLVM_PREFIX}/include)
+		target_link_directories(${target} PRIVATE ${LLVM_PREFIX}/lib)
+		target_link_libraries(${target} PRIVATE clang)
+	endif()
+endif()
+# -----------------------------------------
+
 # If it has been installed by CMake, make LibTCC a dependency
 if(LIBTCC_TARGET)
 	add_dependencies(${target} ${LIBTCC_TARGET})

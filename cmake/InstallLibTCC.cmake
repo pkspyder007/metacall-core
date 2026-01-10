@@ -34,7 +34,7 @@ set(LIBTCC_INSTALL_PREFIX "${PROJECT_OUTPUT_DIR}/libtcc")
 file(MAKE_DIRECTORY ${LIBTCC_INSTALL_PREFIX})
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-	set(LIBTCC_DEBUG "--debug")
+	set(LIBTCC_DEBUG --debug)
 else()
 	set(LIBTCC_DEBUG)
 endif()
@@ -48,6 +48,16 @@ if(PROJECT_OS_FAMILY STREQUAL unix)
 	endif()
 elseif(PROJECT_OS_FAMILY STREQUAL macos)
 	# TODO: --disable-static is not working on MacOS, this should be reported or further investigated
+
+	# macOS-specific setup: detect SDK and compiler paths
+	if(NOT DEFINED CMAKE_OSX_SYSROOT OR CMAKE_OSX_SYSROOT STREQUAL "")
+		execute_process(
+			COMMAND xcrun --show-sdk-path
+			OUTPUT_VARIABLE MACOS_SDK
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+		)
+		set(CMAKE_OSX_SYSROOT "${MACOS_SDK}" CACHE PATH "" FORCE)
+	endif()
 
 	# AddressSanitizer:DEADLYSIGNAL
 	# =================================================================
@@ -76,15 +86,8 @@ elseif(PROJECT_OS_FAMILY STREQUAL macos)
 	#     #21 0x106fd5ee3 in main main.cpp:27
 	#     #22 0x7fff75eb03d4 in start (libdyld.dylib:x86_64+0x163d4)
 
-	# ==5339==Register values:
-	# rax = 0x000000000000002c  rbx = 0x0000000000000001  rcx = 0x00006250000062a0  rdx = 0x0000000000000000
-	# rdi = 0x000000000000002c  rsi = 0x00007ffee8c2a028  rbp = 0x00007ffee8c2a0a0  rsp = 0x00007ffee8c29f98
-	#  r8 = 0x000000010bb0f350   r9 = 0x0000000111c5457c  r10 = 0x0000000000000000  r11 = 0x00007fffac377b10
-	# r12 = 0x0000000000000000  r13 = 0x00007ffee8c29fe0  r14 = 0x000000010bb13c50  r15 = 0x000000000000053b
-	# AddressSanitizer can not provide additional info.
-	# SUMMARY: AddressSanitizer: BUS (libsystem_c.dylib:x86_64+0x3647db0f) in off32
-
-	set(LIBTCC_CONFIGURE ./configure --prefix=${LIBTCC_INSTALL_PREFIX} ${LIBTCC_DEBUG}) # --disable-static
+	# Use the CMake-selected compiler
+	set(LIBTCC_CONFIGURE ./configure --prefix=${LIBTCC_INSTALL_PREFIX} ${LIBTCC_DEBUG})
 elseif(PROJECT_OS_FAMILY STREQUAL win32)
 	if(PROJECT_OS_NAME STREQUAL MinGW)
 		set(LIBTCC_CONFIGURE ./configure --prefix=${LIBTCC_INSTALL_PREFIX} ${LIBTCC_DEBUG} --config-mingw32 --disable-static)
@@ -104,7 +107,7 @@ if(PROJECT_OS_BSD)
 elseif(PROJECT_OS_FAMILY STREQUAL unix)
 	set(LIBTCC_BUILD make -j${N})
 elseif(PROJECT_OS_FAMILY STREQUAL macos)
-	set(LIBTCC_BUILD make -j${N} MACOSX_DEPLOYMENT_TARGET=${PROJECT_OS_VERSION})
+	set(LIBTCC_BUILD make -j${N})
 elseif(PROJECT_OS_FAMILY STREQUAL win32)
 	if(PROJECT_OS_NAME STREQUAL MinGW)
 		set(LIBTCC_BUILD make -j${N})

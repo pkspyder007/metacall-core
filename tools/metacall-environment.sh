@@ -632,7 +632,7 @@ sub_java(){
 sub_c(){
 	echo "configure c"
 	cd $ROOT_DIR
-	LLVM_VERSION_STRING=14
+	LLVM_VERSION_STRING=17
 
 	if [ "${OPERATIVE_SYSTEM}" = "Linux" ]; then
 		if [ "${LINUX_DISTRO}" = "debian" ]; then
