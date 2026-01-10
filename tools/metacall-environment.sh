@@ -682,9 +682,25 @@ sub_c(){
 		brew link llvm@$LLVM_VERSION_STRING --force --overwrite
 		mkdir -p "$ROOT_DIR/build"
 		CMAKE_CONFIG_PATH="$ROOT_DIR/build/CMakeConfig.txt"
+
 		LIBCLANG_PREFIX=$(brew --prefix llvm@$LLVM_VERSION_STRING)
+		SDKROOT=$(xcrun --show-sdk-path)
+		CPATH=""
+		C_INCLUDE_PATH=""
+		CPLUS_INCLUDE_PATH=""
+
 		echo "-DLibClang_INCLUDE_DIR=${LIBCLANG_PREFIX}/include" >> $CMAKE_CONFIG_PATH
 		echo "-DLibClang_LIBRARY=${LIBCLANG_PREFIX}/lib/libclang.dylib" >> $CMAKE_CONFIG_PATH
+		echo "-DLLVM_PREFIX=${LIBCLANG_PREFIX}" >> $CMAKE_CONFIG_PATH
+
+		# macOS SDK and include paths
+		echo "-DCMAKE_OSX_SYSROOT=$SDKROOT" >> $CMAKE_CONFIG_PATH
+		echo "SDKROOT=${SDKROOT}" >> $CMAKE_CONFIG_PATH
+		echo "CPATH=${CPATH}" >> $CMAKE_CONFIG_PATH
+		echo "C_INCLUDE_PATH=${C_INCLUDE_PATH}" >> $CMAKE_CONFIG_PATH
+		echo "CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}" >> $CMAKE_CONFIG_PATH
+
+
 	fi
 }
 

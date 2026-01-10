@@ -96,19 +96,24 @@ add_library(${target} MODULE
 
 # --- libclang include/link fix for macOS ---
 if(APPLE)
-	execute_process(
-		COMMAND brew --prefix llvm
-		OUTPUT_VARIABLE LLVM_PREFIX
-		OUTPUT_STRIP_TRAILING_WHITESPACE
-		ERROR_QUIET
-	)
 	if(LLVM_PREFIX)
+		message(STATUS "Using LLVM from ${LLVM_PREFIX}")
+
+		# Force libclang paths from Homebrew LLVM
+		set(LibClang_INCLUDE_DIR "${LLVM_PREFIX}/include")
+		set(LibClang_LIBRARY "${LLVM_PREFIX}/lib/libclang.dylib")
+
 		target_include_directories(${target} PRIVATE ${LLVM_PREFIX}/include)
 		target_link_directories(${target} PRIVATE ${LLVM_PREFIX}/lib)
 		target_link_libraries(${target} PRIVATE clang)
+	else()
+		message(WARNING "LLVM_PREFIX not set; relying on find_package(LibClang)")
 	endif()
 endif()
 # -----------------------------------------
+
+message(STATUS "LLVM_PREFIX = ${LLVM_PREFIX}")
+message(STATUS "LibClang_INCLUDE_DIR = ${LibClang_INCLUDE_DIR}")
 
 # If it has been installed by CMake, make LibTCC a dependency
 if(LIBTCC_TARGET)

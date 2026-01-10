@@ -40,6 +40,7 @@ else()
 endif()
 
 # Configure
+# Configure
 if(PROJECT_OS_FAMILY STREQUAL unix)
 	if(OPTION_BUILD_MUSL)
 		set(LIBTCC_CONFIGURE ./configure --prefix=${LIBTCC_INSTALL_PREFIX} ${LIBTCC_DEBUG} --disable-static --config-musl)
@@ -49,17 +50,7 @@ if(PROJECT_OS_FAMILY STREQUAL unix)
 elseif(PROJECT_OS_FAMILY STREQUAL macos)
 	# TODO: --disable-static is not working on MacOS, this should be reported or further investigated
 
-	# macOS-specific setup: detect SDK and compiler paths
-	if(NOT DEFINED CMAKE_OSX_SYSROOT OR CMAKE_OSX_SYSROOT STREQUAL "")
-		execute_process(
-			COMMAND xcrun --show-sdk-path
-			OUTPUT_VARIABLE MACOS_SDK
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-		)
-		set(CMAKE_OSX_SYSROOT "${MACOS_SDK}" CACHE PATH "" FORCE)
-	endif()
-
-	# AddressSanitizer:DEADLYSIGNAL
+		# AddressSanitizer:DEADLYSIGNAL
 	# =================================================================
 	# ==5339==ERROR: AddressSanitizer: BUS on unknown address 0x7fffac377b10 (pc 0x7fffac377b10 bp 0x7ffee8c2a0a0 sp 0x7ffee8c29f98 T0)
 	#     #0 0x7fffac377b0f in off32 (libsystem_c.dylib:x86_64+0x3647db0f)
@@ -86,8 +77,24 @@ elseif(PROJECT_OS_FAMILY STREQUAL macos)
 	#     #21 0x106fd5ee3 in main main.cpp:27
 	#     #22 0x7fff75eb03d4 in start (libdyld.dylib:x86_64+0x163d4)
 
-	# Use the CMake-selected compiler
-	set(LIBTCC_CONFIGURE ./configure --prefix=${LIBTCC_INSTALL_PREFIX} ${LIBTCC_DEBUG})
+	# Use SDK only if provided via CMake cache
+	if(CMAKE_OSX_SYSROOT)
+		message(STATUS "Using macOS SDK: ${CMAKE_OSX_SYSROOT}")
+	endif()
+
+	# Use LLVM if provided
+	if(LLVM_PREFIX)
+		message(STATUS "Using LLVM for TCC from ${LLVM_PREFIX}")
+		set(TCC_CC "${LLVM_PREFIX}/bin/clang")
+		set(TCC_CXX "${LLVM_PREFIX}/bin/clang++")
+		set(LIBTCC_CONFIGURE
+			CC=${TCC_CC} CXX=${TCC_CXX}
+			./configure --prefix=${LIBTCC_INSTALL_PREFIX} ${LIBTCC_DEBUG}
+		)
+	else()
+		# Use the CMake-selected compiler
+		set(LIBTCC_CONFIGURE ./configure --prefix=${LIBTCC_INSTALL_PREFIX} ${LIBTCC_DEBUG})
+	endif()
 elseif(PROJECT_OS_FAMILY STREQUAL win32)
 	if(PROJECT_OS_NAME STREQUAL MinGW)
 		set(LIBTCC_CONFIGURE ./configure --prefix=${LIBTCC_INSTALL_PREFIX} ${LIBTCC_DEBUG} --config-mingw32 --disable-static)
@@ -97,6 +104,7 @@ elseif(PROJECT_OS_FAMILY STREQUAL win32)
 else()
 	message(FATAL_ERROR "TCC library install support not implemented in this platform")
 endif()
+
 
 include(ProcessorCount)
 ProcessorCount(N)
